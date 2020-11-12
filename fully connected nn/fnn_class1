@@ -1,0 +1,66 @@
+#libraries
+import tensorflow as tf
+
+import keras
+from keras.datasets import mnist 
+from keras.layers import Dense # densely-connected NN layer 
+from keras.models import Sequential # linear stack of layers
+
+import numpy as np
+import pandas as pd
+
+from matplotlib import pyplot as plt
+from random import randint 
+#loading and preprocessing
+
+(x_tr, y_tr), (x_te, y_te) = mnist.load_data() # tr = training set , te = test set , x = data , y = labels
+# copy of training set
+y_trlin = y_tr
+# copy of test set
+y_telin = y_te
+
+# flatten image
+image_size = 28*28 # each image is 28 x 28 pixels
+x_tr = x_tr.reshape(x_tr.shape[0], image_size)
+x_te = x_te.reshape(x_te.shape[0], image_size)
+# vectors into binary matrices
+num_classes = 10
+y_tr = keras.utils.to_categorical(y_tr, num_classes)
+y_te = keras.utils.to_categorical(y_te, num_classes)
+
+def create_dense(layer_sizes):
+    model = Sequential()
+    model.add(Dense(layer_sizes[0], activation='sigmoid', input_shape=(image_size,)))
+
+    for s in layer_sizes[1:]:
+        model.add(Dense(units = s, activation = 'sigmoid'))
+
+    model.add(Dense(units=num_classes, activation='softmax'))
+
+    return model
+
+def evaluate(model, batch_size=128, epochs=5):
+    model.summary()
+    model.compile(optimizer='sgd', loss='categorical_crossentropy', metrics=['accuracy'])
+    history = model.fit(x_tr, y_tr, batch_size=batch_size, epochs=epochs, validation_split=.5, verbose=False)
+    loss, accuracy  = model.evaluate(x_te, y_te, verbose=False)
+    
+    plt.plot(history.history['accuracy'])
+    plt.plot(history.history['val_accuracy'])
+    plt.title('model accuracy')
+    plt.ylabel('accuracy')
+    plt.xlabel('epoch')
+    plt.legend(['training', 'validation'], loc='best')
+    plt.show()
+        
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title('model losses')
+    plt.ylabel('loss')
+    plt.xlabel('epoch')
+    plt.legend(['training', 'validation'], loc='best')
+    plt.show()
+    
+    for layers in range(1,5):
+    model = create_dense([32] * layers)
+    evaluate(model)

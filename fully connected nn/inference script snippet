@@ -1,0 +1,4 @@
+
+index = int(input('Enter an index between 1 and 10000 to test the network for'))
+plt.imshow(x_te2[index].reshape(28,28),cmap='Greys')
+print('prediction is ' , resultslin[index])
