@@ -1,5 +1,5 @@
 import tensorflow as tf
-  
+import np
 import keras
 from keras.datasets import mnist 
 from keras.layers import Dense, Dropout, Conv2D, Flatten
